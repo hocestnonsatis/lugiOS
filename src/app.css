@@ -8,3 +8,9 @@ html,
 body {
   @apply min-h-full antialiased bg-lugos-bg text-slate-100;
 }
+
+/* Frameless window: keep clicks on links/buttons from starting a window drag */
+.app-no-drag {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}

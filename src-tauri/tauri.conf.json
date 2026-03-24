@@ -16,7 +16,8 @@
         "label": "main",
         "title": "LugiOS",
         "width": 960,
-        "height": 700
+        "height": 700,
+        "decorations": false
       }
     ],
     "security": {

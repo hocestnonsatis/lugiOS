@@ -8,6 +8,7 @@ use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_notification::NotificationExt;
 
 use crate::error::LugosError;
+use crate::github;
 use crate::installer;
 use crate::permissions::{self, GrantRecord, Permission};
 use crate::registry::{self, AppManifest, RegistryEntry};
@@ -370,4 +371,9 @@ pub async fn lugos_fetch(
 #[tauri::command]
 pub async fn preview_app_manifest(app: AppHandle, repo_url: String) -> Result<AppManifest, LugosError> {
     installer::fetch_app_manifest(&repo_url, &app).await
+}
+
+#[tauri::command]
+pub async fn get_github_repo_stats(repo_url: String) -> Result<github::GitHubRepoStats, LugosError> {
+    github::fetch_repo_stats(&repo_url).await
 }

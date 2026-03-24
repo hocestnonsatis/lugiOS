@@ -13,6 +13,9 @@ pub struct RegistryEntry {
     pub tags: Vec<String>,
     pub verified: bool,
     pub published_at: String,
+    /// Optional absolute URL to a square icon (HTTPS). When omitted, the UI derives an image from the GitHub repo.
+    #[serde(default)]
+    pub logo_url: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

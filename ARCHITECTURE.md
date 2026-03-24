@@ -130,10 +130,13 @@ Set the `LUGIOS_REGISTRY_URL` environment variable to override the download URL 
     "description": "A minimal Pomodoro timer for focused work sessions.",
     "tags": ["productivity", "timer"],
     "verified": false,
-    "publishedAt": "2025-01-10T00:00:00Z"
+    "publishedAt": "2025-01-10T00:00:00Z",
+    "logoUrl": "https://example.com/icons/pomodoro.png"
   }
 ]
 ```
+
+Optional **`logoUrl`**: HTTPS image used on marketplace cards and the app detail header. If omitted, the host uses the GitHub repository owner’s avatar (and the API-backed `ownerAvatarUrl` on the detail view when available).
 
 The host app fetches and caches this file on launch, with a configurable TTL (default: 1 hour). No backend server is required.
 

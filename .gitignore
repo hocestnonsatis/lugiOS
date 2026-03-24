@@ -9,3 +9,4 @@ sdk/dist
 !.env.example
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+fixtures/*.zip

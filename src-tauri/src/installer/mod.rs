@@ -7,7 +7,7 @@ use std::fs::File;
 
 use tauri::{AppHandle, Manager};
 
-pub use downloader::fetch_app_manifest;
+pub use downloader::{fetch_app_manifest, parse_github_repo};
 use downloader::download_latest_archive;
 use extractor::extract_app;
 use crate::error::LugosError;

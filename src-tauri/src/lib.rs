@@ -2,6 +2,7 @@
 
 mod commands;
 mod error;
+mod github;
 mod installer;
 mod permissions;
 mod registry;
@@ -39,6 +40,7 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
             commands::lugos_audio_read_asset,
             commands::lugos_fetch,
             commands::preview_app_manifest,
+            commands::get_github_repo_stats,
         ])
         .run(tauri::generate_context!())?;
     Ok(())

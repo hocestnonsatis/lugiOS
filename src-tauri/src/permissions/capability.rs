@@ -41,7 +41,10 @@ pub fn generate_capability_file(app: &AppHandle, grant: &GrantRecord) -> Result<
     let path = dir.join(format!("{}.json", grant.app_id));
     let window_label = format!("app:{}", grant.app_id);
 
-    let mut permissions: Vec<String> = vec!["core:default".to_string()];
+    let mut permissions: Vec<String> = vec![
+        "core:default".to_string(),
+        "core:window:allow-start-dragging".to_string(),
+    ];
     for p in &grant.granted {
         for t in map_permission_to_tauri(p) {
             permissions.push(t.to_string());

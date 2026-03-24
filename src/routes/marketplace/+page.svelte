@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ListingAppLogo from "$lib/components/ListingAppLogo.svelte";
   import PermissionDialog from "$lib/components/PermissionDialog.svelte";
   import {
     initRegistry,
@@ -107,44 +108,61 @@
     <ul class="grid gap-4 sm:grid-cols-2">
       {#each $registryEntries as entry (entry.id)}
         <li
-          class="flex flex-col rounded-xl border border-lugos-border bg-lugos-surface p-5"
+          class="flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-lugos-border bg-lugos-surface"
         >
-          <div class="flex items-start justify-between gap-2">
-            <h2 class="font-semibold text-white">{entry.displayName}</h2>
-            {#if entry.verified}
-              <span
-                class="rounded bg-emerald-500/20 px-2 py-0.5 text-xs font-medium text-emerald-300"
-                >Verified</span
-              >
-            {:else}
-              <span
-                class="rounded bg-amber-500/15 px-2 py-0.5 text-xs text-amber-200"
-                >Unverified</span
-              >
-            {/if}
-          </div>
-          <p class="mt-2 line-clamp-3 text-sm text-lugos-muted">
-            {entry.description}
-          </p>
-          <p class="mt-2 text-xs text-slate-500">
-            by {entry.author} · {entry.repo}
-          </p>
-          <div class="mt-3 flex flex-wrap gap-1">
-            {#each entry.tags as tag (tag)}
-              <span
-                class="rounded bg-lugos-bg px-2 py-0.5 text-xs text-slate-400"
-                >{tag}</span
-              >
-            {/each}
-          </div>
-          <button
-            type="button"
-            class="mt-4 rounded-lg bg-lugos-accent py-2 text-sm font-medium text-white hover:bg-blue-600 disabled:opacity-50"
-            disabled={installBusy}
-            onclick={() => onInstall(entry)}
+          <a
+            href="/marketplace/{entry.id}"
+            class="app-no-drag flex min-h-0 flex-1 flex-col p-5 pb-4 text-left outline-none transition-colors hover:bg-white/[0.04] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-lugos-accent"
           >
-            Install
-          </button>
+            <div class="flex min-h-0 flex-1 gap-4">
+              <ListingAppLogo {entry} />
+              <div class="flex min-h-0 min-w-0 flex-1 flex-col">
+                <div class="flex items-start justify-between gap-2">
+                  <h2 class="font-semibold text-white">{entry.displayName}</h2>
+                  {#if entry.verified}
+                    <span
+                      class="shrink-0 rounded bg-emerald-500/20 px-2 py-0.5 text-xs font-medium text-emerald-300"
+                      >Verified</span
+                    >
+                  {:else}
+                    <span
+                      class="shrink-0 rounded bg-amber-500/15 px-2 py-0.5 text-xs text-amber-200"
+                      >Unverified</span
+                    >
+                  {/if}
+                </div>
+                <p class="mt-2 line-clamp-3 text-sm text-lugos-muted">
+                  {entry.description}
+                </p>
+                <p class="mt-2 text-xs text-slate-500">
+                  by {entry.author} · {entry.repo}
+                </p>
+                <div class="mt-3 flex flex-wrap gap-1">
+                  {#each entry.tags as tag (tag)}
+                    <span
+                      class="rounded bg-lugos-bg px-2 py-0.5 text-xs text-slate-400"
+                      >{tag}</span
+                    >
+                  {/each}
+                </div>
+                <span class="mt-3 text-xs font-medium text-blue-400">
+                  Details & GitHub stats →
+                </span>
+              </div>
+            </div>
+          </a>
+          <div
+            class="shrink-0 border-t border-lugos-border/60 bg-lugos-surface px-5 py-4"
+          >
+            <button
+              type="button"
+              class="app-no-drag w-full rounded-lg bg-lugos-accent py-2 text-sm font-medium text-white hover:bg-blue-600 disabled:opacity-50"
+              disabled={installBusy}
+              onclick={() => onInstall(entry)}
+            >
+              Install
+            </button>
+          </div>
         </li>
       {/each}
     </ul>

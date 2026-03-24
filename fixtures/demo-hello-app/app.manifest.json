@@ -1,0 +1,15 @@
+{
+  "id": "demo-hello",
+  "displayName": "Demo Hello (placeholder)",
+  "version": "0.1.0",
+  "description": "Minimal LugiOS mini-app to verify install and launch from the marketplace.",
+  "icon": "icon.png",
+  "entryPoint": "dist/index.html",
+  "permissions": [],
+  "window": {
+    "width": 520,
+    "height": 380,
+    "resizable": true,
+    "alwaysOnTop": false
+  }
+}

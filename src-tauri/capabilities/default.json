@@ -5,6 +5,10 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
+    "core:window:allow-start-dragging",
+    "core:window:allow-minimize",
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-close",
     "core:webview:allow-create-webview-window",
     "dialog:default",
     "fs:default",
@@ -29,6 +33,7 @@
     "allow-lugos-notification-send",
     "allow-lugos-audio-read-asset",
     "allow-lugos-fetch",
-    "allow-preview-app-manifest"
+    "allow-preview-app-manifest",
+    "allow-get-github-repo-stats"
   ]
 }

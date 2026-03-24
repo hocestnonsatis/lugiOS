@@ -22,6 +22,7 @@ fn main() {
                 "lugos_audio_read_asset",
                 "lugos_fetch",
                 "preview_app_manifest",
+                "get_github_repo_stats",
             ]),
         ),
     )
