@@ -1,8 +1,8 @@
 {
-  "id": "demo-hello",
-  "displayName": "Demo Hello (placeholder)",
+  "id": "demo-notes",
+  "displayName": "Demo Notes (placeholder)",
   "version": "0.1.0",
-  "description": "Sample LugiOS mini-app; install from marketplace entry demo-hello.",
+  "description": "Second sample LugiOS mini-app (notes placeholder) for marketplace tests.",
   "icon": "icon.png",
   "entryPoint": "dist/index.html",
   "permissions": [],

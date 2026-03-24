@@ -13,7 +13,9 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "tauri": "tauri",
     "icons": "node scripts/gen-branding-path-icons.mjs && tauri icon branding/lugios-app-icon.svg -o src-tauri/icons --ios-color \"#0c0f14\" && node scripts/sync-web-favicon.mjs",
-    "package:demo-hello": "node scripts/package-demo-hello.mjs"
+    "package:demo-hello": "node scripts/package-fixture.mjs demo-hello-app",
+    "package:demo-notes": "node scripts/package-fixture.mjs demo-notes-app",
+    "package:fixtures": "node scripts/package-fixture.mjs demo-hello-app && node scripts/package-fixture.mjs demo-notes-app"
   },
   "license": "MIT",
   "dependencies": {

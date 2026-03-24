@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Demo Notes</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 2rem;
+        line-height: 1.5;
+        background: #0c0f14;
+        color: #e2e8f0;
+      }
+      .ok {
+        color: #34d399;
+      }
+      .warn {
+        color: #fbbf24;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Demo Notes</h1>
+    <p>Placeholder mini-app from <code>lugi-demo-notes</code>.</p>
+    <p id="bridge" class="warn">Checking AppBridge…</p>
+    <script>
+      var el = document.getElementById("bridge");
+      if (typeof globalThis.AppBridge !== "undefined") {
+        el.textContent = "AppBridge is available.";
+        el.className = "ok";
+      } else {
+        el.textContent = "AppBridge is not available (unexpected in LugiOS).";
+      }
+    </script>
+  </body>
+</html>

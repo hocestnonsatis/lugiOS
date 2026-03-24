@@ -63,9 +63,13 @@ Other useful scripts:
 | `npm run build:sdk` | Rebuild `sdk/` → `src-tauri/resources/bridge.iife.js` |
 | `npm run check` | Type-check Svelte and TypeScript |
 | `npm run icons` | Regenerate outlined logos in `branding/`, platform icons under `src-tauri/icons/` ([Tauri icon](https://v2.tauri.app/develop/icons/)), and `static/favicon.png` |
-| `npm run package:demo-hello` | Zip `fixtures/demo-hello-app/` → `fixtures/demo-hello-dist.zip` for attaching to a GitHub Release (used by the `demo-hello` registry entry). |
+| `npm run package:demo-hello` | Zip `fixtures/demo-hello-app/` → `fixtures/demo-hello-dist.zip` |
+| `npm run package:demo-notes` | Zip `fixtures/demo-notes-app/` → `fixtures/demo-notes-dist.zip` |
+| `npm run package:fixtures` | Build both zip files |
 
-**Install smoke test:** The marketplace entry `demo-hello` installs from [`lugi-demo-hello` releases](https://github.com/hocestnonsatis/lugi-demo-hello/releases). After installing, open the app from **Installed**; you should see the “Demo Hello” HTML and AppBridge detected. To publish an updated bundle, run `npm run package:demo-hello` and create a new release with the generated zip as an asset.
+**Install smoke test:** Registry entries **`demo-hello`** and **`demo-notes`** install from [`lugi-demo-hello`](https://github.com/hocestnonsatis/lugi-demo-hello/releases) and [`lugi-demo-notes`](https://github.com/hocestnonsatis/lugi-demo-notes/releases). After installing, open the app from **Installed**.
+
+If the marketplace still shows old repo URLs or you see 404s on GitHub API after updating `registry/registry.json`, click **Refresh** on the Marketplace or delete `%APPDATA%\\com.hocestnonsatis.lugios\\registry_cache.json`, then restart the app. Rebuild the host (`npm run tauri dev` / `tauri build`) so the **embedded** registry (compile-time `include_str!`) matches your JSON.
 
 ---
 
@@ -92,7 +96,7 @@ The canonical list in this repo lives at [`registry/registry.json`](./registry/r
 ```
 lugiOS/
 ├── branding/         # LugiOS wordmark + app icon SVG (outlined paths; optional font file for regeneration)
-├── fixtures/         # demo-hello-app: sample mini-app sources packaged for GitHub Releases
+├── fixtures/         # demo-hello-app + demo-notes-app sources; `npm run package:fixtures` → *-dist.zip
 ├── src/              # Host shell (SvelteKit)
 ├── src-tauri/        # Tauri v2 backend (Rust)
 ├── sdk/              # AppBridge SDK source (bundled into the host)

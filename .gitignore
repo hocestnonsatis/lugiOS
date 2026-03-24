@@ -10,3 +10,5 @@ sdk/dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 fixtures/*.zip
+_lugidemorepo/
+_tmp_notes_repo/
