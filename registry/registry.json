@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "id": "demo-hello",
+    "displayName": "Demo Hello (placeholder)",
+    "author": "LugiOS",
+    "repo": "https://github.com/hocestnonsatis/lugi-demo-placeholder",
+    "description": "Placeholder entry for Marketplace UI testing. There is no published app at this repo yet — install will fail until a real manifest and release exist.",
+    "tags": ["demo", "placeholder"],
+    "verified": false,
+    "publishedAt": "2026-03-24T12:00:00Z"
+  },
+  {
+    "id": "demo-notes",
+    "displayName": "Demo Notes (placeholder)",
+    "author": "LugiOS",
+    "repo": "https://github.com/hocestnonsatis/lugi-demo-notes-placeholder",
+    "description": "Another placeholder card to test tags, layout, and refresh. Not a real distributable mini-app.",
+    "tags": ["demo", "placeholder", "productivity"],
+    "verified": true,
+    "publishedAt": "2026-03-24T14:30:00Z"
+  }
+]
