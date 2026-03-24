@@ -1,7 +1,7 @@
 {
   "name": "lugios",
   "version": "0.1.0",
-  "description": "",
+  "description": "LugiOS — desktop runtime and marketplace for sandboxed web mini-apps (Tauri v2 + SvelteKit)",
   "type": "module",
   "scripts": {
     "build:sdk": "npm --prefix ./sdk run build",
