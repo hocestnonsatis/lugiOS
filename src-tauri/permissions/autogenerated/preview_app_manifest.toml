@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-preview-app-manifest"
+description = "Enables the preview_app_manifest command without any pre-configured scope."
+commands.allow = ["preview_app_manifest"]
+
+[[permission]]
+identifier = "deny-preview-app-manifest"
+description = "Denies the preview_app_manifest command without any pre-configured scope."
+commands.deny = ["preview_app_manifest"]

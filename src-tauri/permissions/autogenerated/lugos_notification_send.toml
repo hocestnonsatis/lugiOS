@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-lugos-notification-send"
+description = "Enables the lugos_notification_send command without any pre-configured scope."
+commands.allow = ["lugos_notification_send"]
+
+[[permission]]
+identifier = "deny-lugos-notification-send"
+description = "Denies the lugos_notification_send command without any pre-configured scope."
+commands.deny = ["lugos_notification_send"]

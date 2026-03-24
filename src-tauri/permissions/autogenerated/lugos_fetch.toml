@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-lugos-fetch"
+description = "Enables the lugos_fetch command without any pre-configured scope."
+commands.allow = ["lugos_fetch"]
+
+[[permission]]
+identifier = "deny-lugos-fetch"
+description = "Denies the lugos_fetch command without any pre-configured scope."
+commands.deny = ["lugos_fetch"]

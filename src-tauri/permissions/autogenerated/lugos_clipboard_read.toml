@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-lugos-clipboard-read"
+description = "Enables the lugos_clipboard_read command without any pre-configured scope."
+commands.allow = ["lugos_clipboard_read"]
+
+[[permission]]
+identifier = "deny-lugos-clipboard-read"
+description = "Denies the lugos_clipboard_read command without any pre-configured scope."
+commands.deny = ["lugos_clipboard_read"]

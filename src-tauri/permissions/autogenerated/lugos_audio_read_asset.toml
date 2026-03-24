@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-lugos-audio-read-asset"
+description = "Enables the lugos_audio_read_asset command without any pre-configured scope."
+commands.allow = ["lugos_audio_read_asset"]
+
+[[permission]]
+identifier = "deny-lugos-audio-read-asset"
+description = "Denies the lugos_audio_read_asset command without any pre-configured scope."
+commands.deny = ["lugos_audio_read_asset"]

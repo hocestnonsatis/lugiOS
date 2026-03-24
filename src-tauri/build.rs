@@ -1,0 +1,29 @@
+fn main() {
+    tauri_build::try_build(
+        tauri_build::Attributes::new().app_manifest(
+            tauri_build::AppManifest::new().commands(&[
+                "get_registry",
+                "refresh_registry",
+                "install_app",
+                "uninstall_app",
+                "list_installed",
+                "get_grant",
+                "launch_app",
+                "close_app",
+                "list_running_apps",
+                "storage_get",
+                "storage_set",
+                "storage_delete",
+                "lugos_fs_pick_read",
+                "lugos_fs_save_dialog",
+                "lugos_clipboard_read",
+                "lugos_clipboard_write",
+                "lugos_notification_send",
+                "lugos_audio_read_asset",
+                "lugos_fetch",
+                "preview_app_manifest",
+            ]),
+        ),
+    )
+    .expect("failed to run tauri-build");
+}
