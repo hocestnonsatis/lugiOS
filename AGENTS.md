@@ -391,3 +391,7 @@ Every new Rust file should begin with a one-line doc comment describing its sing
 | `storage_get` | `storage::mod` | `Option<String>` |
 | `storage_set` | `storage::mod` | `()` |
 | `storage_delete` | `storage::mod` | `()` |
+| `check_app_updates` | `updater::mod` | `Vec<AppUpdateStatus>` |
+| `upgrade_app` | `commands` (installer) | `()` |
+| `get_host_settings` | `commands` | `HostSettingsPayload` |
+| `set_host_registry_url` | `commands` | `HostSettingsPayload` |

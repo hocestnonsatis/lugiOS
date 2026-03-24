@@ -15,11 +15,16 @@
     "icons": "node scripts/gen-branding-path-icons.mjs && tauri icon branding/lugios-app-icon.svg -o src-tauri/icons --ios-color \"#0c0f14\" && node scripts/sync-web-favicon.mjs",
     "package:demo-hello": "node scripts/package-fixture.mjs demo-hello-app",
     "package:demo-notes": "node scripts/package-fixture.mjs demo-notes-app",
-    "package:fixtures": "node scripts/package-fixture.mjs demo-hello-app && node scripts/package-fixture.mjs demo-notes-app"
+    "package:fixtures": "node scripts/package-fixture.mjs demo-hello-app && node scripts/package-fixture.mjs demo-notes-app",
+    "simulate:demo-outdated": "node scripts/simulate-outdated-demo-apps.mjs"
   },
   "license": "MIT",
   "dependencies": {
-    "@tauri-apps/api": "^2"
+    "@iconify/icons-mdi": "^1.2.48",
+    "@iconify/svelte": "^5.2.1",
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-process": "^2.3.1",
+    "@tauri-apps/plugin-updater": "^2.10.0"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.6",

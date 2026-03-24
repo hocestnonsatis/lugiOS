@@ -5,20 +5,15 @@ use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 
 use crate::error::LugosError;
+use crate::host_settings;
 use crate::registry::types::RegistryEntry;
 
-/// Default registry file in this monorepo (`registry/registry.json` on `main`).
-/// Override at runtime with `LUGIOS_REGISTRY_URL` if you host the list elsewhere.
-const DEFAULT_REGISTRY_URL: &str =
-    "https://raw.githubusercontent.com/hocestnonsatis/lugiOS/main/registry/registry.json";
+/// Registry URL resolution: see `host_settings` (`LUGIOS_REGISTRY_URL`, saved setting, or default).
 const CACHE_FILE: &str = "registry_cache.json";
 const CACHE_TTL_SECS: u64 = 3600;
 
 const EMBEDDED_REGISTRY_JSON: &str = include_str!("../../../registry/registry.json");
 
-fn registry_url() -> String {
-    std::env::var("LUGIOS_REGISTRY_URL").unwrap_or_else(|_| DEFAULT_REGISTRY_URL.to_string())
-}
 
 fn parse_embedded_registry() -> Result<Vec<RegistryEntry>, LugosError> {
     serde_json::from_str(EMBEDDED_REGISTRY_JSON).map_err(Into::into)
@@ -62,7 +57,7 @@ pub async fn fetch_registry(app: &AppHandle) -> Result<Vec<RegistryEntry>, Lugos
     }
 
     let client = http_client()?;
-    let url = registry_url();
+    let url = host_settings::resolved_registry_url(app)?;
     match fetch_registry_remote(&client, &url).await {
         Ok(entries) => {
             let cache = RegistryCacheFile {
@@ -82,7 +77,7 @@ pub async fn fetch_registry(app: &AppHandle) -> Result<Vec<RegistryEntry>, Lugos
 pub async fn refresh_registry(app: &AppHandle) -> Result<Vec<RegistryEntry>, LugosError> {
     let path = cache_path(app)?;
     let client = http_client()?;
-    let url = registry_url();
+    let url = host_settings::resolved_registry_url(app)?;
     match fetch_registry_remote(&client, &url).await {
         Ok(entries) => {
             let cache = RegistryCacheFile {

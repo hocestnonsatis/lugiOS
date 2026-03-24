@@ -13,6 +13,8 @@
     "dialog:default",
     "fs:default",
     "notification:default",
+    "updater:default",
+    "process:default",
     "sql:default",
     "allow-get-registry",
     "allow-refresh-registry",
@@ -34,6 +36,10 @@
     "allow-lugos-audio-read-asset",
     "allow-lugos-fetch",
     "allow-preview-app-manifest",
-    "allow-get-github-repo-stats"
+    "allow-get-github-repo-stats",
+    "allow-check-app-updates",
+    "allow-upgrade-app",
+    "allow-get-host-settings",
+    "allow-set-host-registry-url"
   ]
 }

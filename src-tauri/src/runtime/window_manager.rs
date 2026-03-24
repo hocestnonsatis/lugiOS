@@ -5,7 +5,7 @@ use tauri::webview::WebviewWindowBuilder;
 use tauri::{AppHandle, Manager, Url, WebviewUrl};
 
 use crate::error::LugosError;
-use crate::permissions::{self};
+use crate::permissions::{self, capability};
 use crate::registry::types::AppManifest;
 use crate::runtime::bridge;
 use crate::util::sanitize_app_id;
@@ -39,18 +39,21 @@ Object.defineProperty(globalThis, '__LUGOS_APP_ID__', {{ value: {sid:?}, writabl
     ))
 }
 
-pub fn launch_app(app: &AppHandle, app_id: &str) -> Result<(), LugosError> {
+/// Opens a mini-app window. Must be `async` so WebView2 can process messages on Windows
+/// (see Tauri `WebviewWindowBuilder` docs — sync commands risk deadlock / broken window chrome).
+pub async fn launch_app(app: &AppHandle, app_id: &str) -> Result<(), LugosError> {
     let id = sanitize_app_id(app_id)?;
     let grant = permissions::load_grant(app, &id)?.ok_or_else(|| LugosError::AppNotFound(id.clone()))?;
     let manifest = load_installed_manifest(app, &id)?;
 
+    capability::generate_capability_file(app, &grant)?;
     let cap_path = app
         .path()
         .app_data_dir()?
         .join("capabilities")
         .join(format!("{id}.json"));
     let cap_json = std::fs::read_to_string(&cap_path)?;
-    let _ = app.add_capability(cap_json);
+    app.add_capability(cap_json)?;
 
     let label = format!("app:{id}");
     if app.get_webview_window(&label).is_some() {
@@ -76,6 +79,10 @@ pub fn launch_app(app: &AppHandle, app_id: &str) -> Result<(), LugosError> {
         .inner_size(w.width as f64, w.height as f64)
         .resizable(w.resizable)
         .always_on_top(w.always_on_top)
+        .decorations(true)
+        .closable(true)
+        .minimizable(true)
+        .maximizable(w.resizable)
         .initialization_script(init)
         .build()?;
     Ok(())

@@ -3,11 +3,13 @@
 mod commands;
 mod error;
 mod github;
+mod host_settings;
 mod installer;
 mod permissions;
 mod registry;
 mod runtime;
 mod storage;
+mod updater;
 mod util;
 
 pub use error::LugosError;
@@ -19,6 +21,8 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![
             commands::get_registry,
             commands::refresh_registry,
@@ -41,6 +45,10 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
             commands::lugos_fetch,
             commands::preview_app_manifest,
             commands::get_github_repo_stats,
+            commands::check_app_updates,
+            commands::upgrade_app,
+            commands::get_host_settings,
+            commands::set_host_registry_url,
         ])
         .run(tauri::generate_context!())?;
     Ok(())

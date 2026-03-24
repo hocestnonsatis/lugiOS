@@ -1,8 +1,19 @@
 <script lang="ts">
   import "../app.css";
+  import ToastHost from "$lib/components/ToastHost.svelte";
+  import Icon from "@iconify/svelte";
+  import {
+    mdiCogOutline,
+    mdiPackageVariant,
+    mdiStoreOutline,
+    mdiWindowClose,
+    mdiWindowMaximize,
+    mdiWindowMinimize,
+  } from "$lib/iconData";
   import { page } from "$app/stores";
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import type { Snippet } from "svelte";
+  import type { IconifyIcon } from "@iconify/types";
 
   interface Props {
     children: Snippet;
@@ -12,9 +23,10 @@
 
   const appWindow = getCurrentWindow();
 
-  const links = [
-    { href: "/marketplace", label: "Marketplace" },
-    { href: "/installed", label: "Installed" },
+  const links: { href: string; label: string; icon: IconifyIcon }[] = [
+    { href: "/marketplace", label: "Marketplace", icon: mdiStoreOutline },
+    { href: "/installed", label: "Installed", icon: mdiPackageVariant },
+    { href: "/settings", label: "Settings", icon: mdiCogOutline },
   ];
 
   function minimize() {
@@ -62,12 +74,13 @@
           <a
             draggable="false"
             href={link.href}
-            class="rounded-lg px-3 py-2 text-sm font-medium transition-colors {$page.url.pathname.startsWith(
+            class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors {$page.url.pathname.startsWith(
               link.href,
             )
               ? 'bg-lugos-accent/15 text-white'
               : 'text-lugos-muted hover:bg-white/5 hover:text-white'}"
           >
+            <Icon icon={link.icon} class="size-4 shrink-0 opacity-90" />
             {link.label}
           </a>
         {/each}
@@ -88,9 +101,7 @@
             aria-label="Minimize window"
             onclick={minimize}
           >
-            <svg width="10" height="1" viewBox="0 0 10 1" aria-hidden="true">
-              <rect width="10" height="1" rx="0.5" fill="currentColor" />
-            </svg>
+            <Icon icon={mdiWindowMinimize} class="size-[15px]" aria-hidden="true" />
           </button>
           <button
             type="button"
@@ -98,23 +109,7 @@
             aria-label="Maximize or restore window"
             onclick={toggleMaximize}
           >
-            <svg
-              width="10"
-              height="10"
-              viewBox="0 0 10 10"
-              fill="none"
-              aria-hidden="true"
-            >
-              <rect
-                x="0.75"
-                y="0.75"
-                width="8.5"
-                height="8.5"
-                rx="0.5"
-                stroke="currentColor"
-                stroke-width="1.25"
-              />
-            </svg>
+            <Icon icon={mdiWindowMaximize} class="size-[15px]" aria-hidden="true" />
           </button>
           <button
             type="button"
@@ -122,20 +117,7 @@
             aria-label="Close window"
             onclick={close}
           >
-            <svg
-              width="10"
-              height="10"
-              viewBox="0 0 10 10"
-              fill="none"
-              aria-hidden="true"
-            >
-              <path
-                d="M1.5 1.5l7 7M8.5 1.5l-7 7"
-                stroke="currentColor"
-                stroke-width="1.25"
-                stroke-linecap="round"
-              />
-            </svg>
+            <Icon icon={mdiWindowClose} class="size-[15px]" aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -144,4 +126,5 @@
   <main class="mx-auto max-w-5xl px-4 py-8">
     {@render children()}
   </main>
+  <ToastHost />
 </div>

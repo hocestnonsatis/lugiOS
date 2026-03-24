@@ -1,17 +1,47 @@
 <script lang="ts">
+  import Icon from "@iconify/svelte";
   import ListingAppLogo from "$lib/components/ListingAppLogo.svelte";
   import PermissionDialog from "$lib/components/PermissionDialog.svelte";
+  import {
+    mdiArrowLeft,
+    mdiBugOutline,
+    mdiClose,
+    mdiDownloadOutline,
+    mdiEyeOutline,
+    mdiGithub,
+    mdiOpenInNew,
+    mdiPlay,
+    mdiRefresh,
+    mdiSourceFork,
+    mdiStar,
+  } from "$lib/iconData";
   import { invokeErrorMessage } from "$lib/invokeError";
   import { initRegistry, registryEntries, registryLoading } from "$lib/stores/registry";
-  import { installApp } from "$lib/stores/installed";
+  import {
+    installApp,
+    launchApp,
+    loadInstalled,
+    installedApps,
+  } from "$lib/stores/installed";
   import type { AppManifest, GitHubRepoStats } from "$lib/types";
   import { page } from "$app/stores";
+  import { afterNavigate } from "$app/navigation";
   import { invoke } from "@tauri-apps/api/core";
   import { onMount } from "svelte";
 
   const id = $derived($page.params.id ?? "");
 
-  onMount(() => initRegistry());
+  onMount(() => {
+    initRegistry();
+    void loadInstalled();
+  });
+
+  afterNavigate((n) => {
+    const path = n.to?.url.pathname ?? "";
+    if (path.startsWith("/marketplace")) {
+      void loadInstalled();
+    }
+  });
 
   const entry = $derived($registryEntries.find((e) => e.id === id) ?? null);
 
@@ -51,6 +81,12 @@
   let previewError = $state<string | null>(null);
   let installBusy = $state(false);
   let installErr = $state<string | null>(null);
+  let launchErr = $state<string | null>(null);
+
+  const installedManifest = $derived(
+    entry ? $installedApps.find((a) => a.id === entry.id) : undefined,
+  );
+  const installed = $derived(installedManifest !== undefined);
 
   async function onInstall() {
     if (!entry) return;
@@ -92,6 +128,16 @@
     }
   }
 
+  async function onOpen() {
+    if (!entry) return;
+    launchErr = null;
+    try {
+      await launchApp(entry.id);
+    } catch (e) {
+      launchErr = invokeErrorMessage(e);
+    }
+  }
+
   function formatDate(iso: string | null | undefined): string {
     if (!iso) return "—";
     const d = new Date(iso);
@@ -108,9 +154,10 @@
   <div>
     <a
       href="/marketplace"
-      class="app-no-drag text-sm text-lugos-muted transition-colors hover:text-white"
+      class="app-no-drag inline-flex items-center gap-1.5 text-sm text-lugos-muted transition-colors hover:text-white"
     >
-      ← Marketplace
+      <Icon icon={mdiArrowLeft} class="size-4 shrink-0" />
+      Marketplace
     </a>
   </div>
 
@@ -127,8 +174,9 @@
       </p>
       <a
         href="/marketplace"
-        class="mt-4 inline-block rounded-lg bg-lugos-accent px-4 py-2 text-sm font-medium text-white hover:bg-blue-600"
+        class="app-no-drag mt-4 inline-flex items-center justify-center gap-2 rounded-lg bg-lugos-accent px-4 py-2 text-sm font-medium text-white hover:bg-blue-600"
       >
+        <Icon icon={mdiArrowLeft} class="size-4 shrink-0" />
         Back to Marketplace
       </a>
     </div>
@@ -138,9 +186,16 @@
         <ListingAppLogo {entry} stats={stats} variant="hero" />
         <div class="flex min-w-0 flex-1 flex-col gap-2">
           <div class="flex flex-wrap items-start justify-between gap-3">
-            <h1 class="text-2xl font-semibold text-white">
-              {entry.displayName}
-            </h1>
+            <div class="min-w-0">
+              <h1 class="text-2xl font-semibold text-white">
+                {entry.displayName}
+              </h1>
+              {#if installedManifest}
+                <p class="mt-1 text-sm font-medium text-emerald-300/90">
+                  Installed · v{installedManifest.version}
+                </p>
+              {/if}
+            </div>
             {#if entry.verified}
               <span
                 class="shrink-0 rounded bg-emerald-500/20 px-2 py-1 text-xs font-medium text-emerald-300"
@@ -177,7 +232,10 @@
       <section
         class="rounded-xl border border-lugos-border bg-lugos-surface/60 p-5"
       >
-        <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-400">
+        <h2
+          class="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-400"
+        >
+          <Icon icon={mdiGithub} class="size-4 text-slate-400" />
           Repository (GitHub)
         </h2>
 
@@ -194,25 +252,40 @@
               <p class="text-2xl font-semibold text-white">
                 {stats.stars.toLocaleString()}
               </p>
-              <p class="text-xs text-lugos-muted">Stars</p>
+              <p class="flex items-center gap-1 text-xs text-lugos-muted">
+                <Icon icon={mdiStar} class="size-3.5 text-amber-400/90" />
+                Stars
+              </p>
             </div>
             <div>
               <p class="text-2xl font-semibold text-white">
                 {stats.forks.toLocaleString()}
               </p>
-              <p class="text-xs text-lugos-muted">Forks</p>
+              <p class="flex items-center gap-1 text-xs text-lugos-muted">
+                <Icon
+                  icon={mdiSourceFork}
+                  class="size-3.5 text-slate-400"
+                />
+                Forks
+              </p>
             </div>
             <div>
               <p class="text-2xl font-semibold text-white">
                 {stats.openIssues.toLocaleString()}
               </p>
-              <p class="text-xs text-lugos-muted">Open issues</p>
+              <p class="flex items-center gap-1 text-xs text-lugos-muted">
+                <Icon icon={mdiBugOutline} class="size-3.5 text-orange-300/80" />
+                Open issues
+              </p>
             </div>
             <div>
               <p class="text-2xl font-semibold text-white">
                 {stats.watchers.toLocaleString()}
               </p>
-              <p class="text-xs text-lugos-muted">Watchers</p>
+              <p class="flex items-center gap-1 text-xs text-lugos-muted">
+                <Icon icon={mdiEyeOutline} class="size-3.5 text-sky-300/80" />
+                Watchers
+              </p>
             </div>
           </div>
 
@@ -276,9 +349,11 @@
           href={stats?.htmlUrl ?? entry.repo}
           target="_blank"
           rel="noreferrer"
-          class="app-no-drag mt-4 inline-flex text-sm font-medium text-blue-400 hover:underline"
+          class="app-no-drag mt-4 inline-flex items-center gap-2 text-sm font-medium text-blue-400 hover:underline"
         >
-          View on GitHub →
+          <Icon icon={mdiGithub} class="size-4 shrink-0" />
+          View on GitHub
+          <Icon icon={mdiOpenInNew} class="size-3.5 shrink-0 opacity-70" />
         </a>
       </section>
 
@@ -290,14 +365,46 @@
         </p>
       {/if}
 
-      <button
-        type="button"
-        class="app-no-drag w-full max-w-xs rounded-lg bg-lugos-accent py-3 text-sm font-medium text-white hover:bg-blue-600 disabled:opacity-50 sm:w-auto"
-        disabled={installBusy}
-        onclick={onInstall}
-      >
-        Install…
-      </button>
+      {#if launchErr}
+        <p
+          class="rounded-lg border border-red-900/50 bg-red-950/40 p-4 text-sm text-red-200"
+        >
+          {launchErr}
+        </p>
+      {/if}
+
+      {#if installed}
+        <div class="flex w-full max-w-md flex-col gap-3 sm:flex-row">
+          <button
+            type="button"
+            class="app-no-drag flex items-center justify-center gap-2 rounded-lg bg-lugos-accent py-3 text-sm font-medium text-white hover:bg-blue-600 disabled:opacity-50 sm:flex-1"
+            disabled={installBusy}
+            onclick={onOpen}
+          >
+            <Icon icon={mdiPlay} class="size-4 shrink-0" />
+            Open
+          </button>
+          <button
+            type="button"
+            class="app-no-drag flex items-center justify-center gap-2 rounded-lg border border-lugos-border py-3 text-sm font-medium text-slate-200 hover:bg-white/5 disabled:opacity-50 sm:flex-1"
+            disabled={installBusy}
+            onclick={onInstall}
+          >
+            <Icon icon={mdiRefresh} class="size-4 shrink-0" />
+            Reinstall…
+          </button>
+        </div>
+      {:else}
+        <button
+          type="button"
+          class="app-no-drag flex w-full max-w-xs items-center justify-center gap-2 rounded-lg bg-lugos-accent py-3 text-sm font-medium text-white hover:bg-blue-600 disabled:opacity-50 sm:w-auto"
+          disabled={installBusy}
+          onclick={onInstall}
+        >
+          <Icon icon={mdiDownloadOutline} class="size-4 shrink-0" />
+          Install…
+        </button>
+      {/if}
     </div>
   {/if}
 </div>
@@ -314,9 +421,10 @@
       <p class="mt-2 text-sm text-red-200">{previewError}</p>
       <button
         type="button"
-        class="mt-4 rounded-lg border border-lugos-border px-4 py-2 text-sm text-white hover:bg-white/5"
+        class="mt-4 inline-flex items-center justify-center gap-2 rounded-lg border border-lugos-border px-4 py-2 text-sm text-white hover:bg-white/5"
         onclick={closePreviewError}
       >
+        <Icon icon={mdiClose} class="size-4 shrink-0" />
         Close
       </button>
     </div>

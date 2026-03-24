@@ -44,6 +44,9 @@ pub fn generate_capability_file(app: &AppHandle, grant: &GrantRecord) -> Result<
     let mut permissions: Vec<String> = vec![
         "core:default".to_string(),
         "core:window:allow-start-dragging".to_string(),
+        "core:window:allow-close".to_string(),
+        "core:window:allow-minimize".to_string(),
+        "core:window:allow-toggle-maximize".to_string(),
     ];
     for p in &grant.granted {
         for t in map_permission_to_tauri(p) {

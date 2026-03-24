@@ -7,7 +7,7 @@ use std::fs::File;
 
 use tauri::{AppHandle, Manager};
 
-pub use downloader::{fetch_app_manifest, parse_github_repo};
+pub use downloader::{fetch_app_manifest, fetch_latest_release_tag, parse_github_repo};
 use downloader::download_latest_archive;
 use extractor::extract_app;
 use crate::error::LugosError;
@@ -23,6 +23,26 @@ pub async fn install_app(
     app_id: &str,
     repo_url: &str,
     grants: Vec<String>,
+) -> Result<(), LugosError> {
+    install_app_inner(app, app_id, repo_url, grants, false).await
+}
+
+/// Reinstalls from the repo’s latest release, dropping saved grants that the new manifest no longer lists.
+pub async fn upgrade_installed_app(
+    app: &AppHandle,
+    app_id: &str,
+    repo_url: &str,
+    grants: Vec<String>,
+) -> Result<(), LugosError> {
+    install_app_inner(app, app_id, repo_url, grants, true).await
+}
+
+async fn install_app_inner(
+    app: &AppHandle,
+    app_id: &str,
+    repo_url: &str,
+    grants: Vec<String>,
+    prune_stale_grants: bool,
 ) -> Result<(), LugosError> {
     let archive = download_latest_archive(repo_url, app).await?;
     let dest = apps_root(app)?.join(app_id);
@@ -42,14 +62,23 @@ pub async fn install_app(
             manifest.id, app_id
         )));
     }
-    for g in &grants {
-        if !manifest.permissions.iter().any(|p| p == g) {
-            let _ = std::fs::remove_dir_all(&dest);
-            return Err(LugosError::Msg(format!(
-                "grant '{g}' is not declared in the app manifest"
-            )));
+
+    let grants: Vec<String> = if prune_stale_grants {
+        grants
+            .into_iter()
+            .filter(|g| manifest.permissions.iter().any(|p| p == g))
+            .collect()
+    } else {
+        for g in &grants {
+            if !manifest.permissions.iter().any(|p| p == g) {
+                let _ = std::fs::remove_dir_all(&dest);
+                return Err(LugosError::Msg(format!(
+                    "grant '{g}' is not declared in the app manifest"
+                )));
+            }
         }
-    }
+        grants
+    };
 
     let mut perms = Vec::with_capacity(grants.len());
     for g in grants {

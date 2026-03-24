@@ -12,3 +12,8 @@ vite.config.ts.timestamp-*
 fixtures/*.zip
 _lugidemorepo/
 _tmp_notes_repo/
+
+# Rust / Tauri
+src-tauri/target/
+# Updater signing private key (never commit)
+src-tauri/.tauri/*.key

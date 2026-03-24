@@ -9,6 +9,7 @@ use tauri_plugin_notification::NotificationExt;
 
 use crate::error::LugosError;
 use crate::github;
+use crate::host_settings;
 use crate::installer;
 use crate::permissions::{self, GrantRecord, Permission};
 use crate::registry::{self, AppManifest, RegistryEntry};
@@ -19,7 +20,7 @@ use crate::util::sanitize_app_id;
 fn require_app_window(window: &WebviewWindow, app_id: &str) -> Result<(), LugosError> {
     let id = sanitize_app_id(app_id)?;
     let expected = format!("app:{id}");
-    if window.label().to_string() != expected {
+    if window.label() != expected.as_str() {
         return Err(LugosError::PermissionDenied(
             "this IPC endpoint is only available from the mini-app window".into(),
         ));
@@ -99,8 +100,8 @@ pub fn get_grant(app: AppHandle, app_id: String) -> Result<Option<GrantRecord>, 
 }
 
 #[tauri::command]
-pub fn launch_app(app: AppHandle, app_id: String) -> Result<(), LugosError> {
-    runtime::launch_app(&app, &app_id)
+pub async fn launch_app(app: AppHandle, app_id: String) -> Result<(), LugosError> {
+    runtime::launch_app(&app, &app_id).await
 }
 
 #[tauri::command]
@@ -376,4 +377,63 @@ pub async fn preview_app_manifest(app: AppHandle, repo_url: String) -> Result<Ap
 #[tauri::command]
 pub async fn get_github_repo_stats(repo_url: String) -> Result<github::GitHubRepoStats, LugosError> {
     github::fetch_repo_stats(&repo_url).await
+}
+
+#[tauri::command]
+pub async fn check_app_updates(
+    app: AppHandle,
+) -> Result<Vec<crate::updater::AppUpdateStatus>, LugosError> {
+    crate::updater::check_app_updates(&app).await
+}
+
+#[tauri::command]
+pub async fn upgrade_app(app: AppHandle, app_id: String) -> Result<(), LugosError> {
+    let id = sanitize_app_id(&app_id)?;
+    let entries = registry::fetch_registry(&app).await?;
+    let entry = entries
+        .iter()
+        .find(|e| e.id == id)
+        .ok_or_else(|| {
+            LugosError::Msg(
+                "app is not in the marketplace registry; cannot resolve the GitHub repo for updates"
+                    .into(),
+            )
+        })?;
+    let grant = permissions::load_grant(&app, &id)?
+        .ok_or_else(|| LugosError::Msg("no saved permission grant for this app".into()))?;
+    let grants: Vec<String> = grant.granted.iter().map(|p| p.as_token()).collect();
+    runtime::close_app(&app, &id)?;
+    installer::upgrade_installed_app(&app, &id, &entry.repo, grants).await
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HostSettingsPayload {
+    pub saved_registry_url: Option<String>,
+    pub resolved_registry_url: String,
+    pub env_override_active: bool,
+}
+
+fn host_settings_view(app: &AppHandle) -> Result<HostSettingsPayload, LugosError> {
+    let s = host_settings::load(app)?;
+    let resolved = host_settings::resolved_registry_url(app)?;
+    Ok(HostSettingsPayload {
+        saved_registry_url: s.registry_url.clone(),
+        resolved_registry_url: resolved,
+        env_override_active: host_settings::env_registry_override_active(),
+    })
+}
+
+#[tauri::command]
+pub async fn get_host_settings(app: AppHandle) -> Result<HostSettingsPayload, LugosError> {
+    host_settings_view(&app)
+}
+
+#[tauri::command]
+pub async fn set_host_registry_url(
+    app: AppHandle,
+    url: Option<String>,
+) -> Result<HostSettingsPayload, LugosError> {
+    host_settings::apply_registry_url_override(&app, url)?;
+    host_settings_view(&app)
 }

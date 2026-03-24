@@ -21,6 +21,7 @@ Stack: **Tauri v2** (Rust), **SvelteKit** + **TypeScript** (host UI), **Tailwind
 |----------|---------|
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | System design, data flow, and on-disk layout |
 | [AGENTS.md](./AGENTS.md) | Task breakdown and rules for contributors / coding agents |
+| [docs/SMOKE_TEST.md](./docs/SMOKE_TEST.md) | Manual regression checklist before releases |
 
 ---
 
@@ -66,8 +67,11 @@ Other useful scripts:
 | `npm run package:demo-hello` | Zip `fixtures/demo-hello-app/` → `fixtures/demo-hello-dist.zip` |
 | `npm run package:demo-notes` | Zip `fixtures/demo-notes-app/` → `fixtures/demo-notes-dist.zip` |
 | `npm run package:fixtures` | Build both zip files |
+| `npm run simulate:demo-outdated` | Lowers installed demo app manifest versions under the app data dir so you can verify mini-app **Update** (see script header) |
 
 **Install smoke test:** Registry entries **`demo-hello`** and **`demo-notes`** install from [`lugi-demo-hello`](https://github.com/hocestnonsatis/lugi-demo-hello/releases) and [`lugi-demo-notes`](https://github.com/hocestnonsatis/lugi-demo-notes/releases). After installing, open the app from **Installed**.
+
+A longer manual checklist lives in [`docs/SMOKE_TEST.md`](./docs/SMOKE_TEST.md).
 
 If the marketplace still shows old repo URLs or you see 404s on GitHub API after updating `registry/registry.json`, click **Refresh** on the Marketplace or delete `%APPDATA%\\com.hocestnonsatis.lugios\\registry_cache.json`, then restart the app. Rebuild the host (`npm run tauri dev` / `tauri build`) so the **embedded** registry (compile-time `include_str!`) matches your JSON.
 
@@ -79,7 +83,9 @@ By default the host downloads the registry from:
 
 `https://raw.githubusercontent.com/hocestnonsatis/lugiOS/main/registry/registry.json`
 
-Override at runtime with:
+**In the app:** **Settings → Marketplace registry** lets you save a custom HTTPS URL (stored under the app data directory). **Refresh** or **Save and refresh** applies it immediately.
+
+Override for a single process with:
 
 ```bash
 # PowerShell example
@@ -87,7 +93,19 @@ $env:LUGIOS_REGISTRY_URL = "https://raw.githubusercontent.com/OWNER/REPO/BRANCH/
 npm run tauri dev
 ```
 
+If set, the environment variable wins over the saved URL until you unset it and restart.
+
 The canonical list in this repo lives at [`registry/registry.json`](./registry/registry.json).
+
+---
+
+## Host application updates (Tauri updater)
+
+The desktop host can check **GitHub Releases** for a signed update manifest (`latest.json`). Configure endpoints and the **public** signing key in [`src-tauri/tauri.conf.json`](./src-tauri/tauri.conf.json). Keep the **private** key out of git (see `.gitignore` for `src-tauri/.tauri/*.key`).
+
+For **signed updater bundles**, set `bundle.createUpdaterArtifacts` to `true` and provide `TAURI_SIGNING_PRIVATE_KEY` or `TAURI_SIGNING_PRIVATE_KEY_PATH` when running `tauri build`. The repository defaults to `createUpdaterArtifacts: false` so `npm run tauri build` succeeds without signing keys.
+
+Use **Settings → LugiOS updates → Check for LugiOS updates** to run a check from the UI.
 
 ---
 

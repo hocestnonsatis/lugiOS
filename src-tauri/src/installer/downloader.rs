@@ -19,7 +19,14 @@ struct GhAsset {
 
 #[derive(Debug, Deserialize)]
 struct GhRelease {
+    #[allow(dead_code)]
+    tag_name: String,
     assets: Vec<GhAsset>,
+}
+
+#[derive(Debug, Deserialize)]
+struct GhLatestTagOnly {
+    tag_name: String,
 }
 
 fn http_client() -> Result<reqwest::Client, LugosError> {
@@ -28,6 +35,27 @@ fn http_client() -> Result<reqwest::Client, LugosError> {
         .timeout(std::time::Duration::from_secs(10))
         .build()
         .map_err(Into::into)
+}
+
+fn github_release_api(owner: &str, repo: &str) -> String {
+    format!("https://api.github.com/repos/{owner}/{repo}/releases/latest")
+}
+
+/// Latest release `tag_name` from GitHub (e.g. `v1.2.0`). Used for update checks without downloading assets.
+pub async fn fetch_latest_release_tag(repo_url: &str) -> Result<String, LugosError> {
+    let (owner, repo) = parse_github_repo(repo_url)?;
+    let api = github_release_api(&owner, &repo);
+    let client = http_client()?;
+    let rel: GhLatestTagOnly = client
+        .get(&api)
+        .header("Accept", "application/vnd.github+json")
+        .header("X-GitHub-Api-Version", "2022-11-28")
+        .send()
+        .await?
+        .error_for_status()?
+        .json()
+        .await?;
+    Ok(rel.tag_name)
 }
 
 pub fn parse_github_repo(repo_url: &str) -> Result<(String, String), LugosError> {
@@ -92,12 +120,12 @@ async fn download_to_path(url: &str, dest: &Path) -> Result<(), LugosError> {
 
 pub async fn fetch_app_manifest(repo_url: &str, app: &AppHandle) -> Result<AppManifest, LugosError> {
     let (owner, repo) = parse_github_repo(repo_url)?;
-    let api = format!(
-        "https://api.github.com/repos/{owner}/{repo}/releases/latest"
-    );
+    let api = github_release_api(&owner, &repo);
     let client = http_client()?;
     let release: GhRelease = client
         .get(&api)
+        .header("Accept", "application/vnd.github+json")
+        .header("X-GitHub-Api-Version", "2022-11-28")
         .send()
         .await?
         .error_for_status()?
@@ -145,12 +173,12 @@ pub async fn download_latest_archive(
     app: &AppHandle,
 ) -> Result<PathBuf, LugosError> {
     let (owner, repo) = parse_github_repo(repo_url)?;
-    let api = format!(
-        "https://api.github.com/repos/{owner}/{repo}/releases/latest"
-    );
+    let api = github_release_api(&owner, &repo);
     let client = http_client()?;
     let release: GhRelease = client
         .get(&api)
+        .header("Accept", "application/vnd.github+json")
+        .header("X-GitHub-Api-Version", "2022-11-28")
         .send()
         .await?
         .error_for_status()?

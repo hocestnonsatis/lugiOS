@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Icon from "@iconify/svelte";
+  import { mdiCheck, mdiClose, mdiShieldLockOutline } from "$lib/iconData";
   import { describePermission } from "$lib/permissionLabels";
   import type { AppManifest } from "$lib/types";
 
@@ -44,8 +46,15 @@
       aria-modal="true"
       aria-labelledby="perm-title"
     >
-      <h2 id="perm-title" class="text-lg font-semibold text-white">
-        Install “{manifest.displayName}”?
+      <h2
+        id="perm-title"
+        class="flex items-start gap-2 text-lg font-semibold text-white"
+      >
+        <Icon
+          icon={mdiShieldLockOutline}
+          class="mt-0.5 size-5 shrink-0 text-lugos-accent"
+        />
+        <span>Install “{manifest.displayName}”?</span>
       </h2>
       <p class="mt-2 text-sm text-lugos-muted">
         Version {manifest.version} — The app requests the following capabilities.
@@ -78,16 +87,18 @@
       <div class="mt-6 flex justify-end gap-3">
         <button
           type="button"
-          class="rounded-lg border border-lugos-border px-4 py-2 text-sm text-slate-200 hover:bg-white/5"
+          class="inline-flex items-center justify-center gap-2 rounded-lg border border-lugos-border px-4 py-2 text-sm text-slate-200 hover:bg-white/5"
           onclick={oncancel}
         >
+          <Icon icon={mdiClose} class="size-4 shrink-0" />
           Cancel
         </button>
         <button
           type="button"
-          class="rounded-lg bg-lugos-accent px-4 py-2 text-sm font-medium text-white hover:bg-blue-600"
+          class="inline-flex items-center justify-center gap-2 rounded-lg bg-lugos-accent px-4 py-2 text-sm font-medium text-white hover:bg-blue-600"
           onclick={confirm}
         >
+          <Icon icon={mdiCheck} class="size-4 shrink-0" />
           Allow &amp; install
         </button>
       </div>

@@ -116,7 +116,8 @@ lugiOS/
 
 The registry is `registry/registry.json` in this monorepo, published on `main` and fetched from
 `https://raw.githubusercontent.com/hocestnonsatis/lugiOS/main/registry/registry.json`.
-Set the `LUGIOS_REGISTRY_URL` environment variable to override the download URL at runtime.
+Resolution order: non-empty `LUGIOS_REGISTRY_URL` environment variable, then an optional URL persisted in
+`app_data_dir()/host_settings.json` (Settings UI), then the default URL above.
 
 **registry.json schema:**
 

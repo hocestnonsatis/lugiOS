@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-upgrade-app"
+description = "Enables the upgrade_app command without any pre-configured scope."
+commands.allow = ["upgrade_app"]
+
+[[permission]]
+identifier = "deny-upgrade-app"
+description = "Denies the upgrade_app command without any pre-configured scope."
+commands.deny = ["upgrade_app"]
